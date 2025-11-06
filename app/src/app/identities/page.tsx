@@ -61,13 +61,8 @@ function IdentitiesContent() {
 
         // Parse events into identities
         const parsedIdentities: Identity[] = await Promise.all(
-          events.map(async (event) => {
-            const { name, namespace, owner, nftId } = event.args as {
-              name: string
-              namespace: bigint
-              owner: string
-              nftId: bigint
-            }
+          events.map(async (event: any) => {
+            const { name, namespace, owner, nftId } = event.args
 
             // Get block timestamp
             const block = await publicClient.getBlock({ blockNumber: event.blockNumber })
