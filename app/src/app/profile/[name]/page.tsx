@@ -7,6 +7,13 @@ import { formatUnits } from 'viem'
 import { Button } from '@hanzo/ui'
 import { CONTRACTS, REGISTRY_ABI } from '@/lib/contracts'
 
+// For static export, generate empty params (client-side rendering only)
+export function generateStaticParams() {
+  return []
+}
+
+export const dynamicParams = true
+
 export default function ProfilePage() {
   const params = useParams()
   const name = params.name as string
