@@ -46,3 +46,8 @@ Thumbs.db
 # Build outputs
 dist/
 build/
+
+# Next.js build output
+app/.next/
+app/out/
+app/node_modules/
