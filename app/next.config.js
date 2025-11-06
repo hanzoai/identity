@@ -6,6 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  turbopack: {},
   webpack: (config) => {
     config.resolve.fallback = {
       fs: false,
