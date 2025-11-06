@@ -1,9 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-[#0a0a0a] text-white;
-  }
+@theme {
+  --color-background: 10 10 10;
+  --color-foreground: 255 255 255;
+  --color-primary: 255 107 53;
+  --color-secondary: 0 78 137;
+  --color-accent: 255 255 255;
+  --color-muted: 38 38 38;
+  --color-muted-foreground: 163 163 163;
+  --color-border: 38 38 38;
+  --color-card: 10 10 10;
+}
+
+body {
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
 }
