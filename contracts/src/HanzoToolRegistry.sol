@@ -21,7 +21,7 @@ contract HanzoToolRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgrad
     // Structs
     struct ToolMetadata {
         string name;              // @hanzo/audio-insight
-        string identity;          // @@official.hanzo
+        string identity;          // @hanzo (mainnet) or @alice.hanzotest (testnet)
         string repository;        // github.com/hanzoai/tools
         string path;              // /agents/audio-insight
         string version;           // 1.0.0

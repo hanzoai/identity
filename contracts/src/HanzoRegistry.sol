@@ -144,14 +144,16 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
         hanzoNft = HanzoNftInterface(hanzoNft_);
 
         // Initialize namespaces for all networks
+        // Mainnet identities have no suffix: @alice
+        // Testnet identities have network suffix: @alice.hanzotest
         namespaces[31337] = "localhost";       // Localhost / Anvil
-        namespaces[36963] = "hanzo";           // Hanzo mainnet
-        namespaces[1] = "ai";                  // .ai alias for Hanzo mainnet
-        namespaces[36962] = "hanzo-testnet";   // Hanzo testnet
+        namespaces[36963] = "";                // Hanzo mainnet - no suffix!
+        namespaces[1] = "";                    // .ai alias for Hanzo mainnet
+        namespaces[36962] = "hanzotest";       // Hanzo testnet
         namespaces[96369] = "lux";             // Lux mainnet
-        namespaces[96368] = "lux-testnet";     // Lux testnet
+        namespaces[96368] = "luxtest";         // Lux testnet
         namespaces[200200] = "zoo";            // Zoo mainnet
-        namespaces[200201] = "zoo-testnet";    // Zoo testnet
+        namespaces[200201] = "zootest";        // Zoo testnet
         namespaces[11155111] = "sepolia";      // Sepolia testnet
         namespaces[421614] = "arbitrum-sepolia"; // Arbitrum Sepolia
 
@@ -581,7 +583,13 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
     }
 
     function getIdentity(string calldata name, uint256 namespace) public view returns (string memory) {
-        return string(abi.encodePacked("@", name, ".", namespaces[namespace]));
+        string memory ns = namespaces[namespace];
+        // Mainnet has no suffix: @alice
+        // Other networks have suffix: @alice.hanzotest
+        if (bytes(ns).length == 0) {
+            return string(abi.encodePacked("@", name));
+        }
+        return string(abi.encodePacked("@", name, ".", ns));
     }
 
     function getIdentityData(string calldata identity) external view returns (IdentityData memory) {
