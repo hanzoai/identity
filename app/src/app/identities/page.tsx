@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePublicClient, useChainId } from 'wagmi'
-import { Button } from '@hanzo/ui'
+import { Button } from '@/components/ui/button'
 import { CONTRACTS, REGISTRY_ABI } from '@/lib/contracts'
 import { ClientOnly } from '@/components/client-only'
 
