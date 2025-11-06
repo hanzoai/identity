@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAccount, useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { formatUnits, parseUnits } from 'viem'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button, Input } from '@hanzo/ui'
 import { CONTRACTS, REGISTRY_ABI, TOKEN_ABI, getPriceWithReferral } from '@/lib/contracts'
 
 export default function RegisterPage() {

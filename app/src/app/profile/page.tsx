@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useChainId, useReadContract } from 'wagmi'
 import { formatUnits } from 'viem'
-import { Button } from '@/components/ui/button'
+import { Button } from '@hanzo/ui'
 import { CONTRACTS, REGISTRY_ABI } from '@/lib/contracts'
 import { ClientOnly } from '@/components/client-only'
 

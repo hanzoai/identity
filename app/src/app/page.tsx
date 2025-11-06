@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+import { Button } from '@hanzo/ui'
 
 export default function HomePage() {
   return (
