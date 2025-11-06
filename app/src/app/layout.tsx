@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Hanzo Identity Registry',
-  description: 'Decentralized identity registration for Hanzo, Lux, and Zoo networks',
+  description: 'Decentralized identity registration for the Hanzo blockchain network',
 }
 
 export default function RootLayout({

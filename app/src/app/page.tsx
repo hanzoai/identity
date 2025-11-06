@@ -10,7 +10,7 @@ export default function HomePage() {
           Decentralized Identity Registry
         </h1>
         <p className="text-xl text-muted-foreground mb-8">
-          Secure your identity across Hanzo, Lux, and Zoo blockchain networks with NFT-backed registration
+          Secure your identity on the Hanzo blockchain network with NFT-backed registration
         </p>
         <div className="flex gap-4 justify-center">
           <Link href="/register">
@@ -31,7 +31,7 @@ export default function HomePage() {
         <FeatureCard
           icon="🌐"
           title="Multi-Network"
-          description="Register identities on Hanzo, Lux, Zoo, and test networks"
+          description="Register identities on Hanzo network and test environments"
         />
         <FeatureCard
           icon="🎨"

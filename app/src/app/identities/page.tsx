@@ -1,27 +1,110 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePublicClient, useChainId } from 'wagmi'
 import { Button } from '@hanzo/ui'
-
-// Mock data - in production this would come from blockchain events or indexer
-const MOCK_IDENTITIES = [
-  { name: 'alice', owner: '0x1234...5678', network: 'Hanzo', timestamp: '2024-01-15' },
-  { name: 'bob', owner: '0x2345...6789', network: 'Lux', timestamp: '2024-01-14' },
-  { name: 'charlie', owner: '0x3456...7890', network: 'Zoo', timestamp: '2024-01-13' },
-  { name: 'david', owner: '0x4567...8901', network: 'Hanzo', timestamp: '2024-01-12' },
-  { name: 'eve', owner: '0x5678...9012', network: 'Lux', timestamp: '2024-01-11' },
-  { name: 'frank', owner: '0x6789...0123', network: 'Zoo', timestamp: '2024-01-10' },
-]
+import { CONTRACTS, REGISTRY_ABI } from '@/lib/contracts'
+import { ClientOnly } from '@/components/client-only'
 
 const ITEMS_PER_PAGE = 10
 
-export default function IdentitiesPage() {
+interface Identity {
+  name: string
+  owner: string
+  network: string
+  timestamp: string
+  nftId: string
+}
+
+function getNetworkName(chainId: number): string {
+  switch (chainId) {
+    case 31337:
+      return 'Localhost'
+    case 36963:
+      return 'Hanzo'
+    case 96369:
+      return 'Lux'
+    case 200200:
+      return 'Zoo'
+    default:
+      return 'Unknown'
+  }
+}
+
+function IdentitiesContent() {
+  const [identities, setIdentities] = useState<Identity[]>([])
+  const [loading, setLoading] = useState(true)
+  const publicClient = usePublicClient()
+  const chainId = useChainId()
+
+  useEffect(() => {
+    async function fetchIdentities() {
+      if (!publicClient) return
+
+      setLoading(true)
+      try {
+        const contracts = CONTRACTS[chainId as keyof typeof CONTRACTS]
+        if (!contracts) {
+          setIdentities([])
+          setLoading(false)
+          return
+        }
+
+        // Fetch IdentityClaimed events
+        const events = await publicClient.getContractEvents({
+          address: contracts.registryProxy,
+          abi: REGISTRY_ABI,
+          eventName: 'IdentityClaimed',
+          fromBlock: 0n,
+        })
+
+        // Parse events into identities
+        const parsedIdentities: Identity[] = await Promise.all(
+          events.map(async (event) => {
+            const { name, namespace, owner, nftId } = event.args as {
+              name: string
+              namespace: bigint
+              owner: string
+              nftId: bigint
+            }
+
+            // Get block timestamp
+            const block = await publicClient.getBlock({ blockNumber: event.blockNumber })
+            const timestamp = new Date(Number(block.timestamp) * 1000).toISOString().split('T')[0]
+
+            // Get network name from namespace/chainId
+            const network = getNetworkName(Number(namespace))
+
+            return {
+              name,
+              owner: `${owner.slice(0, 6)}...${owner.slice(-4)}`,
+              network,
+              timestamp,
+              nftId: nftId.toString(),
+            }
+          })
+        )
+
+        // Sort by newest first
+        parsedIdentities.sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+        setIdentities(parsedIdentities)
+      } catch (error) {
+        console.error('Error fetching identities:', error)
+        setIdentities([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchIdentities()
+  }, [publicClient, chainId])
+
   const [page, setPage] = useState(0)
   const [search, setSearch] = useState('')
   const [networkFilter, setNetworkFilter] = useState<string>('all')
 
-  const filteredIdentities = MOCK_IDENTITIES.filter((identity) => {
+  const filteredIdentities = identities.filter((identity) => {
     const matchesSearch = identity.name.toLowerCase().includes(search.toLowerCase())
     const matchesNetwork = networkFilter === 'all' || identity.network === networkFilter
     return matchesSearch && matchesNetwork
@@ -63,6 +146,7 @@ export default function IdentitiesPage() {
               <option value="Hanzo">Hanzo</option>
               <option value="Lux">Lux</option>
               <option value="Zoo">Zoo</option>
+              <option value="Localhost">Localhost</option>
             </select>
           </div>
 
@@ -73,7 +157,14 @@ export default function IdentitiesPage() {
 
         {/* Identities List */}
         <div className="space-y-4 mb-8">
-          {displayedIdentities.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-12 bg-card border border-border rounded-lg">
+              <div className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-32 mx-auto mb-2" />
+                <div className="h-3 bg-muted rounded w-24 mx-auto" />
+              </div>
+            </div>
+          ) : displayedIdentities.length === 0 ? (
             <div className="text-center py-12 bg-card border border-border rounded-lg">
               <p className="text-muted-foreground">No identities found</p>
             </div>
@@ -81,7 +172,7 @@ export default function IdentitiesPage() {
             displayedIdentities.map((identity) => (
               <Link
                 key={identity.name}
-                href={`/profile/${identity.name}`}
+                href={`/profile?name=${identity.name}`}
                 className="block bg-card border border-border rounded-lg p-6 hover:border-primary transition-colors"
               >
                 <div className="flex items-center justify-between">
@@ -151,5 +242,13 @@ export default function IdentitiesPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function IdentitiesPage() {
+  return (
+    <ClientOnly>
+      <IdentitiesContent />
+    </ClientOnly>
   )
 }
