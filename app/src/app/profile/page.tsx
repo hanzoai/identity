@@ -1,15 +1,15 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useChainId, useReadContract } from 'wagmi'
 import { formatUnits } from 'viem'
 import { Button } from '@hanzo/ui'
 import { CONTRACTS, REGISTRY_ABI } from '@/lib/contracts'
 
-export default function ProfileClientPage() {
-  const params = useParams()
-  const name = params.name as string
+export default function ProfilePage() {
+  const searchParams = useSearchParams()
+  const name = searchParams.get('name') || ''
   const chainId = useChainId()
   const contracts = CONTRACTS[chainId as keyof typeof CONTRACTS]
 
@@ -19,8 +19,24 @@ export default function ProfileClientPage() {
     abi: REGISTRY_ABI,
     functionName: 'identities',
     args: [name],
-    query: { enabled: !!contracts },
+    query: { enabled: !!contracts && !!name },
   }) as { data: readonly [string, bigint, bigint, bigint] | undefined; isLoading: boolean }
+
+  if (!name) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-2xl mx-auto text-center">
+          <h1 className="text-3xl font-bold mb-4">No Identity Specified</h1>
+          <p className="text-muted-foreground mb-6">
+            Please provide an identity name in the URL.
+          </p>
+          <Link href="/identities">
+            <Button>Browse Identities</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   if (isLoading) {
     return (
