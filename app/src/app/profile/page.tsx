@@ -6,8 +6,9 @@ import { useChainId, useReadContract } from 'wagmi'
 import { formatUnits } from 'viem'
 import { Button } from '@hanzo/ui'
 import { CONTRACTS, REGISTRY_ABI } from '@/lib/contracts'
+import { ClientOnly } from '@/components/client-only'
 
-export default function ProfilePage() {
+function ProfileContent() {
   const searchParams = useSearchParams()
   const name = searchParams.get('name') || ''
   const chainId = useChainId()
@@ -159,4 +160,12 @@ function getNetworkName(chainId: number): string {
     default:
       return 'Unknown'
   }
+}
+
+export default function ProfilePage() {
+  return (
+    <ClientOnly>
+      <ProfileContent />
+    </ClientOnly>
+  )
 }
