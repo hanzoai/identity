@@ -10,6 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        'primary': '#FF6B35',
+        'secondary': '#004E89',
+        'accent': '#ffffff',
         'hanzo-orange': '#FF6B35',
         'hanzo-blue': '#004E89',
         'hanzo-cyan': '#00D9FF',
