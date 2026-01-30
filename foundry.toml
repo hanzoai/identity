@@ -2,11 +2,17 @@
 src = "contracts/src"
 out = "artifacts"
 libs = ["node_modules"]
-solc = "0.8.19"
+solc = "0.8.31"
 via_ir = true
 optimizer = true
 optimizer_runs = 200
 remappings = [
+    # Use @luxfi/standard for all DID contracts
+    "@luxfi/standard/=node_modules/@luxfi/standard/contracts/",
     "@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/",
     "@openzeppelin/contracts-upgradeable/=node_modules/@openzeppelin/contracts-upgradeable/"
 ]
+
+# DID contracts are in @luxfi/standard:
+# - @luxfi/standard/did/Registry.sol
+# - @luxfi/standard/did/IdentityNFT.sol
