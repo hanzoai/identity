@@ -19,14 +19,19 @@ interface HanzoNftInterface {
 
 /**
  * @title HanzoRegistry
- * @dev Multi-network identity registry for Hanzo, Lux, and Zoo ecosystems
+ * @dev Multi-network DID registry for Hanzo, Lux, Zoo, and Pars ecosystems
+ *
+ * DID Formats:
+ *   did:lux:alice   - W3C DID method (canonical, for protocols)
+ *   alice@lux.id    - Display format (user-friendly, like email)
  *
  * Supported networks:
- * - Hanzo mainnet (36963) / testnet (36962)
- * - Lux mainnet (96369) / testnet (96368)
- * - Zoo mainnet (200200) / testnet (200201)
- * - Sepolia testnet
- * - Arbitrum Sepolia testnet
+ * - Hanzo: did:hanzo:alice / alice@hanzo.id (36963/36962)
+ * - Lux:   did:lux:alice   / alice@lux.id (96369/96368)
+ * - Zoo:   did:zoo:alice   / alice@zoo.id (200200/200201)
+ * - Pars:  did:pars:alice  / alice@pars.id (TBD)
+ *
+ * Resolution: did:lux:alice → on-chain lookup → DID Document
  */
 contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeable {
 
@@ -71,7 +76,8 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
     HanzoTokenInterface public shinToken; // AI token
     HanzoNftInterface public hanzoNft;
 
-    mapping(uint256 => string) public namespaces;
+    mapping(uint256 => string) public namespaces;      // chainId => method (e.g., "lux", "pars")
+    mapping(uint256 => string) public displayDomains;  // chainId => domain (e.g., "lux.id", "pars.id")
     mapping(string => mapping(string => string)) public identityRecords;
     mapping(string => address) private _identityToOwner;
     mapping(uint256 => string) public tokenIdToIdentity;
@@ -143,19 +149,42 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
         shinToken = HanzoTokenInterface(shinToken_);
         hanzoNft = HanzoNftInterface(hanzoNft_);
 
-        // Initialize namespaces for all networks
-        // Mainnet identities have no suffix: @alice
-        // Testnet identities have network suffix: @alice.hanzotest
-        namespaces[31337] = "localhost";       // Localhost / Anvil
-        namespaces[36963] = "";                // Hanzo mainnet - no suffix!
-        namespaces[1] = "";                    // .ai alias for Hanzo mainnet
-        namespaces[36962] = "hanzotest";       // Hanzo testnet
-        namespaces[96369] = "lux";             // Lux mainnet
-        namespaces[96368] = "luxtest";         // Lux testnet
-        namespaces[200200] = "zoo";            // Zoo mainnet
-        namespaces[200201] = "zootest";        // Zoo testnet
-        namespaces[11155111] = "sepolia";      // Sepolia testnet
-        namespaces[421614] = "arbitrum-sepolia"; // Arbitrum Sepolia
+        // Initialize namespaces (DID methods) and display domains
+        // Canonical: did:lux:alice  |  Display: alice@lux.id
+
+        // Localhost / Development
+        namespaces[31337] = "local";
+        displayDomains[31337] = "local.id";
+
+        // Hanzo (AI chain)
+        namespaces[36963] = "hanzo";           // did:hanzo:alice
+        displayDomains[36963] = "hanzo.id";    // alice@hanzo.id
+        namespaces[36962] = "hanzo-test";
+        displayDomains[36962] = "test.hanzo.id";
+
+        // Lux (main L1)
+        namespaces[96369] = "lux";             // did:lux:alice
+        displayDomains[96369] = "lux.id";      // alice@lux.id
+        namespaces[96368] = "lux-test";
+        displayDomains[96368] = "test.lux.id";
+
+        // Zoo (research chain)
+        namespaces[200200] = "zoo";            // did:zoo:alice
+        displayDomains[200200] = "zoo.id";     // alice@zoo.id
+        namespaces[200201] = "zoo-test";
+        displayDomains[200201] = "test.zoo.id";
+
+        // Pars (community chain)
+        namespaces[787878] = "pars";           // did:pars:alice
+        displayDomains[787878] = "pars.id";    // alice@pars.id
+        namespaces[787879] = "pars-test";
+        displayDomains[787879] = "test.pars.id";
+
+        // External testnets
+        namespaces[11155111] = "sepolia";
+        displayDomains[11155111] = "sepolia.id";
+        namespaces[421614] = "arb-sepolia";
+        displayDomains[421614] = "arb-sepolia.id";
 
         baseRewardsRate = 1e16; // 1% base rate
         rewardsState = RewardsState(1e36, uint32(block.number));
@@ -209,8 +238,8 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
         // Validate namespace
         if (bytes(namespaces[params.namespace]).length == 0) revert InvalidNamespace(params.namespace);
 
-        // Construct identity string: @name.namespace
-        string memory identity = string(abi.encodePacked("@", params.name, ".", namespaces[params.namespace]));
+        // Construct canonical DID: did:lux:alice
+        string memory identity = string(abi.encodePacked("did:", namespaces[params.namespace], ":", params.name));
 
         // Check availability
         if (_identityToOwner[identity] != address(0)) revert IdentityNotAvailable(identity);
@@ -582,14 +611,27 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
         return _identityToOwner[identity];
     }
 
-    function getIdentity(string calldata name, uint256 namespace) public view returns (string memory) {
-        string memory ns = namespaces[namespace];
-        // Mainnet has no suffix: @alice
-        // Other networks have suffix: @alice.hanzotest
-        if (bytes(ns).length == 0) {
-            return string(abi.encodePacked("@", name));
-        }
-        return string(abi.encodePacked("@", name, ".", ns));
+    /**
+     * @dev Get canonical DID format: did:lux:alice
+     */
+    function getDID(string calldata name, uint256 chainId) public view returns (string memory) {
+        string memory method = namespaces[chainId];
+        return string(abi.encodePacked("did:", method, ":", name));
+    }
+
+    /**
+     * @dev Get display format: alice@lux.id
+     */
+    function getDisplayId(string calldata name, uint256 chainId) public view returns (string memory) {
+        string memory domain = displayDomains[chainId];
+        return string(abi.encodePacked(name, "@", domain));
+    }
+
+    /**
+     * @dev Get identity (canonical DID) - backwards compatible
+     */
+    function getIdentity(string calldata name, uint256 chainId) public view returns (string memory) {
+        return getDID(name, chainId);
     }
 
     function getIdentityData(string calldata identity) external view returns (IdentityData memory) {
