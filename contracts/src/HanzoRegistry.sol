@@ -175,10 +175,10 @@ contract HanzoRegistry is Initializable, UUPSUpgradeable, Ownable2StepUpgradeabl
         displayDomains[200201] = "test.zoo.id";
 
         // Pars (community chain)
-        namespaces[787878] = "pars";           // did:pars:alice
-        displayDomains[787878] = "pars.id";    // alice@pars.id
-        namespaces[787879] = "pars-test";
-        displayDomains[787879] = "test.pars.id";
+        namespaces[494949] = "pars";           // did:pars:alice
+        displayDomains[494949] = "pars.id";    // alice@pars.id
+        namespaces[494950] = "pars-test";
+        displayDomains[494950] = "test.pars.id";
 
         // External testnets
         namespaces[11155111] = "sepolia";
