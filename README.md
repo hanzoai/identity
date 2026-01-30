@@ -1,12 +1,49 @@
-# Hanzo AI Identity
+# Hanzo Identity
 
-**Clarity through intelligence.**
+Identity infrastructure for the Hanzo/Lux ecosystem.
 
-This repository contains the core identity, values, and soul of Hanzo AI.
+## Decentralized Identity (DID)
 
-## Contents
+**Core contracts are in [@luxfi/standard](https://github.com/luxfi/standard):**
 
-- `soul.md` - The complete soul document defining Hanzo AI's identity, values, and behavioral guidelines
+```
+@luxfi/standard/contracts/did/
+├── Registry.sol      # Multi-chain DID registry
+└── IdentityNFT.sol   # NFT bound to DID ownership
+```
+
+### DID Format
+
+```
+did:lux:alice      # W3C canonical format
+alice@lux.id       # Display format
+alice.lux.id       # Web subdomain
+```
+
+### Supported Chains
+
+| Chain | ID | DID Method | Display |
+|-------|-----|------------|---------|
+| Lux | 96369 | `did:lux:` | `@lux.id` |
+| Pars | 494949 | `did:pars:` | `@pars.id` |
+| Zoo | 200200 | `did:zoo:` | `@zoo.id` |
+| Hanzo | 36963 | `did:hanzo:` | `@hanzo.id` |
+
+## This Repository
+
+- `app/` - Next.js frontend for identity management
+- `scripts/` - Deployment scripts
+- `soul.md` - Hanzo AI identity and values
+
+## Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run frontend
+cd app && pnpm dev
+```
 
 ## About Hanzo AI
 
@@ -20,9 +57,9 @@ Hanzo AI is a frontier AI company focused on:
 
 ## Related
 
-- [hanzoai/brand](https://github.com/hanzoai/brand) - Brand guidelines
-- [hanzoai/logo](https://github.com/hanzoai/logo) - Logo assets
-- [hanzoai/press](https://github.com/hanzoai/press) - Press kit
+- [LIP-7006: Decentralized Identity](https://github.com/luxfi/lips)
+- [@luxfi/standard](https://github.com/luxfi/standard)
+- [hanzoai/brand](https://github.com/hanzoai/brand)
 
 ## License
 
