@@ -1,0 +1,55 @@
+---
+title: Hanzo ID
+description: Unified identity infrastructure for the Hanzo ecosystem.
+---
+
+Unified identity infrastructure for the Hanzo ecosystem.
+
+## Overview
+
+Hanzo ID provides decentralized identity (DID) and authentication services across all Hanzo products. One identity, seamless access to console, APIs, and services.
+
+## Features
+
+- **Single Sign-On (SSO)** - One login for all Hanzo services
+- **OAuth 2.0 / OIDC** - Industry-standard authentication
+- **WebAuthn / Passkeys** - Passwordless authentication
+- **API Keys** - Programmatic access to Hanzo APIs
+
+## Authentication Methods
+
+| Method | Description |
+|--------|-------------|
+| Email + Password | Traditional authentication |
+| Magic Link | Passwordless email login |
+| WebAuthn | Hardware security keys, biometrics |
+| OAuth | Sign in with Google, GitHub, etc. |
+
+## Integration
+
+```typescript
+import { HanzoAuth } from '@hanzo/auth'
+
+const auth = new HanzoAuth({
+  clientId: 'your-client-id',
+  redirectUri: 'https://your-app.com/callback'
+})
+
+// Initiate login
+await auth.login()
+
+// Get user info
+const user = await auth.getUser()
+```
+
+## API Endpoints
+
+- `https://iam.hanzo.ai/login/oauth/authorize` - OAuth authorization
+- `https://iam.hanzo.ai/api/userinfo` - User information
+- `https://iam.hanzo.ai/.well-known/openid-configuration` - OIDC discovery
+
+## Support
+
+- [Console](https://console.hanzo.ai)
+- [API Documentation](https://hanzoai.github.io/docs/api)
+- [Discord](https://discord.gg/hanzo)
