@@ -1,0 +1,60 @@
+---
+title: Pars ID
+description: Identity infrastructure for the global Persian community network.
+---
+
+Identity infrastructure for the global Persian community network.
+
+## Overview
+
+Pars ID provides decentralized identity and authentication for the Pars Network - connecting Persian communities worldwide through secure, privacy-preserving digital identity.
+
+## Features
+
+- **Community Identity** - Verified membership in Persian network
+- **Voting Rights** - Participate in community governance
+- **Privacy First** - Zero-knowledge proofs for selective disclosure
+- **Multi-language** - Full Farsi (فارسی) support
+
+## Use Cases
+
+- **Governance** - Vote on community proposals at pars.vote
+- **Verification** - Prove community membership without revealing identity
+- **Access** - Single sign-on to Pars Network services
+- **Credentials** - Issue and verify community credentials
+
+## Authentication
+
+```typescript
+import { ParsAuth } from '@pars/auth'
+
+const auth = new ParsAuth({
+  clientId: 'your-client-id',
+  locale: 'fa' // Farsi
+})
+
+// Sign in
+await auth.login()
+
+// Get membership credential
+const membership = await auth.getMembership()
+
+// Vote
+await auth.vote(proposalId, choice)
+```
+
+## Governance
+
+Pars ID holders can participate in community governance:
+
+| Action | Requirement |
+|--------|-------------|
+| View proposals | Any Pars ID |
+| Vote | Verified member |
+| Create proposal | 100+ reputation |
+
+## Resources
+
+- [Pars Vote](https://pars.vote) - Community governance
+- [Pars Network](https://pars.network) - Main network
+- [Community](https://t.me/parsnetwork) - Telegram

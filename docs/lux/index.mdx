@@ -1,0 +1,64 @@
+---
+title: Lux ID
+description: Decentralized identity for the Lux blockchain network.
+---
+
+Decentralized identity for the Lux blockchain network.
+
+## Overview
+
+Lux ID provides blockchain-native identity and authentication for the Lux Network. Post-quantum secure, self-sovereign identity with on-chain verification.
+
+## Features
+
+- **Decentralized Identifiers (DIDs)** - W3C compliant DIDs on Lux Network
+- **Verifiable Credentials** - Issue and verify credentials on-chain
+- **Post-Quantum Security** - Future-proof cryptographic primitives
+- **Wallet Integration** - Connect with Lux Wallet, MetaMask
+
+## DID Methods
+
+```
+did:lux:mainnet:0x1234...abcd
+did:lux:testnet:0x5678...efgh
+```
+
+## Authentication Flow
+
+1. Connect wallet or create Lux ID
+2. Sign authentication challenge
+3. Receive verifiable credential
+4. Access Lux Network services
+
+## Integration
+
+```typescript
+import { LuxAuth } from '@luxfi/auth'
+
+const auth = new LuxAuth({
+  network: 'mainnet',
+  clientId: 'your-client-id'
+})
+
+// Connect wallet
+const did = await auth.connectWallet()
+
+// Sign in
+await auth.authenticate()
+
+// Get verifiable credential
+const vc = await auth.getCredential()
+```
+
+## Smart Contracts
+
+| Contract | Address | Network |
+|----------|---------|---------|
+| DID Registry | `0x...` | Mainnet |
+| Credential Store | `0x...` | Mainnet |
+
+## Resources
+
+- [Lux Finance](https://lux.finance)
+- [Lux Network](https://lux.network)
+- [Block Explorer](https://explorer.lux.network)
